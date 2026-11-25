@@ -10,11 +10,15 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12", "3.13"]
+    defaults:
+      run:
+        working-directory: desktop
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
+          cache-dependency-path: desktop/requirements.txt
       - run: pip install -r requirements.txt
       - run: python manage.py test core
