@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Presay: check your script before you say it</title>
+    <meta
+      name="description"
+      content="Paste an interview answer or a talk. Presay marks the words a listener may mishear, suggests easier ones, and lets you practise them out loud. Runs entirely in your browser."
+    />
+    <meta name="theme-color" content="#eef1f6" />
+    <meta property="og:title" content="Presay: check your script before you say it" />
+    <meta
+      property="og:description"
+      content="Find the words a listener may mishear before your interview or talk, and practise them. Free, private, runs in your browser."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://presay.app/" />
+    <meta property="og:site_name" content="Presay" />
+    <meta property="og:image" content="https://presay.app/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Presay: check your script before you say it. In the sentence “I worked with three teams across the world”, three words are underlined." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="https://presay.app/" />
+    <link rel="icon" href="favicon.ico" sizes="32x32" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="preload" href="assets/fonts/gentium-book-plus-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="assets/fonts/schibsted-grotesk-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script type="module" src="js/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="wordmark" href="/"><img class="wordmark__mark" src="favicon.svg" alt="" width="32" height="32" />Presay</a>
+        <nav class="nav" aria-label="Main">
+          <a href="#check" data-nav="check">Check script</a>
+          <a href="#practice" data-nav="practice">Practice</a>
+          <a href="#words" data-nav="words">My words<span class="count" id="words-count" hidden></span></a>
+          <a href="#about" data-nav="about">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <!-- Check script -->
+      <section data-view="check" aria-labelledby="check-title">
+        <div class="hero">
+          <div class="hero__text">
+            <h1 id="check-title">Check your script before you say it</h1>
+            <p>
+              Paste an interview answer or a talk. Presay marks the words a listener is most likely to mishear,
+              explains why, and suggests easier ones. Everything runs in your browser.
+            </p>
+            <div class="language">
+              <label for="language-select">My first language</label>
+              <span class="select"><select id="language-select" data-language-select></select></span>
+              <div class="explain">
+                <span class="explain__label" id="explain-label">Explanations in</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="explain-label">
+                  <label><input type="radio" name="explain" value="en" /><span>English</span></label>
+                  <label><input type="radio" name="explain" value="native" /><span data-native-label></span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="workspace">
+          <div class="sheet">
+            <div class="sheet__bar">
+              <button type="button" class="button button--primary" id="check-button">Check script</button>
+              <div class="examples" id="examples" role="group" aria-labelledby="examples-label">
+                <span class="examples__label" id="examples-label">Try an example:</span>
+                <button type="button" class="button button--quiet" data-example="interview">Job interview</button>
+                <button type="button" class="button button--quiet" data-example="talk">Presentation</button>
+                <button type="button" class="button button--quiet" data-example="meeting">Team meeting</button>
+              </div>
+              <button type="button" class="button" id="edit-button" hidden>Edit text</button>
+              <button type="button" class="button button--quiet" id="copy-button">Copy text</button>
+              <button type="button" class="button button--quiet" id="clear-button">Clear</button>
+              <span class="spacer"></span>
+              <div class="segmented" role="radiogroup" aria-label="Which marks to show" id="show-filter" hidden>
+                <label><input type="radio" name="show" value="all" /><span>All marks</span></label>
+                <label><input type="radio" name="show" value="high" /><span>Most risky</span></label>
+              </div>
+            </div>
+            <p class="summary sheet__summary" id="summary" aria-live="polite" hidden></p>
+            <label for="script-input" class="visually-hidden">Your script</label>
+            <textarea
+              id="script-input"
+              class="script-input"
+              placeholder="Paste or type what you are going to say…"
+              spellcheck="true"
+            ></textarea>
+            <div id="script-view" class="script-view" hidden></div>
+          </div>
+
+          <aside class="panel" id="panel" aria-label="Word details">
+            <button type="button" class="icon-button panel__close" id="panel-close" aria-label="Close word details">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" /></svg>
+            </button>
+            <div id="panel-content" aria-live="polite"></div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section data-view="practice" aria-labelledby="practice-title" hidden>
+        <div class="view-intro">
+          <h1 id="practice-title">Practise out loud</h1>
+          <p>
+            Say the words and Presay listens with a speech model that runs on this device. When it hears a different
+            word than the one you meant, that word goes on your list.
+          </p>
+        </div>
+        <div id="setup" class="setup" hidden></div>
+        <div id="practice-body" hidden>
+          <div class="segmented mode-switch" role="radiogroup" aria-label="Practice mode">
+            <label><input type="radio" name="mode" value="drill" checked /><span>Word by word</span></label>
+            <label><input type="radio" name="mode" value="read" /><span>My script</span></label>
+            <label><input type="radio" name="mode" value="texts" /><span>Practice texts</span></label>
+          </div>
+          <div id="drill"></div>
+          <div id="read" hidden></div>
+        </div>
+      </section>
+
+      <!-- My words -->
+      <section data-view="words" aria-labelledby="words-title" hidden>
+        <div class="view-intro">
+          <h1 id="words-title">My words</h1>
+          <p>
+            Words the speech model heard differently when you practised. They are saved only in this browser, so export
+            a backup if you switch devices.
+          </p>
+        </div>
+        <div id="words-list"></div>
+        <div class="actions">
+          <button type="button" class="button" id="export-button">Export my words</button>
+          <label class="button" for="import-input">Import a backup</label>
+          <input type="file" id="import-input" accept="application/json,.json" class="visually-hidden" />
+          <button type="button" class="button button--danger" id="reset-button">Delete all words</button>
+        </div>
+        <div class="settings">
+          <h2>Settings</h2>
+          <div class="setting">
+            <div><label for="setting-language">First language</label></div>
+            <div>
+              <span class="select"><select id="setting-language" data-language-select></select></span>
+              <p class="muted setting__note">Changes which sounds are marked and the tips you see.</p>
+            </div>
+          </div>
+          <div class="setting">
+            <div id="setting-explain-label">Explanations</div>
+            <div role="radiogroup" aria-labelledby="setting-explain-label">
+              <label class="choice"><input type="radio" name="setting-explain" value="en" /><span>In English</span></label>
+              <label class="choice"><input type="radio" name="setting-explain" value="native" /><span>In my first language (<span data-native-label></span>)</span></label>
+            </div>
+          </div>
+          <div class="setting">
+            <div id="setting-model-label">Speech model</div>
+            <div role="radiogroup" aria-labelledby="setting-model-label">
+              <label class="choice"><input type="radio" name="setting-model" value="small" /><span>Most accurate<small>About 250 MB to download once. Best with accents, a few seconds per check on older laptops.</small></span></label>
+              <label class="choice"><input type="radio" name="setting-model" value="base" /><span>Accurate<small>About 77 MB to download once. Better at catching slips.</small></span></label>
+              <label class="choice"><input type="radio" name="setting-model" value="tiny" /><span>Fast<small>About 41 MB. Quicker on phones and older laptops.</small></span></label>
+            </div>
+          </div>
+          <div class="setting" id="setting-gpu-row" hidden>
+            <div>Graphics card</div>
+            <label class="choice"><input type="checkbox" id="setting-gpu" /><span>Use the graphics card for speech recognition<small>Can be faster on good computers, but the download is bigger.</small></span></label>
+          </div>
+          <div class="setting">
+            <div id="setting-voice-label">Voice for Listen</div>
+            <div role="radiogroup" aria-labelledby="setting-voice-label">
+              <label class="choice"><input type="radio" name="setting-voice" value="en-GB" /><span>British English</span></label>
+              <label class="choice"><input type="radio" name="setting-voice" value="en-US" /><span>American English</span></label>
+            </div>
+          </div>
+          <div class="setting">
+            <div>Downloaded model</div>
+            <div>
+              <p class="muted" style="margin: 0 0 0.6rem">The speech model is stored in your browser so it does not download again.</p>
+              <button type="button" class="button" id="clear-model-button">Delete downloaded model</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section data-view="about" aria-labelledby="about-title" hidden>
+        <div class="view-intro">
+          <h1 id="about-title">About Presay</h1>
+          <p>A pre-flight check for what you are about to say, made for people who speak English as another language.</p>        </div>
+        <div class="prose">
+          <h2>What it does</h2>
+          <p>
+            Paste the answer or talk you have prepared. Presay marks the words that listeners are most likely to
+            mishear, shows how they are pronounced, explains what makes them tricky, and suggests easier words you could
+            use instead. Then you can practise the marked words, read your whole script aloud, or pick one of the practice
+            texts from everyday situations, and see what was heard.
+          </p>
+
+          <h2>How the marks work</h2>
+          <ul>
+            <li>
+              <strong>Blue marks</strong> are words the speech model heard differently when you practised. Your own
+              results always win over the general rules.
+            </li>
+            <li>
+              <strong>Red and amber marks</strong> come from sound and spelling patterns that are hard for speakers of
+              your first language: for example the two “th” sounds, /w/ and /v/, /r/ and /l/, short vowels, consonant
+              clusters, endings that get dropped or lose their voice, silent letters and long words with tricky stress.
+              A word scores higher when a typical slip turns it into a different real word, like “west” into “vest” or
+              “right” into “light”.
+            </li>
+            <li>
+              <strong>Your first language</strong> decides which of these count and how much. There are rule sets for
+              speakers of <span id="language-list">ten languages</span>. If yours is not listed, choose the one whose
+              sounds are closest.
+            </li>
+            <li>
+              <strong>Explanations</strong> of why a word is hard and how to say it can be shown in English or in your
+              first language. Everything else on the site stays in English.
+            </li>
+            <li>
+              <strong>Easier alternatives</strong> come from WordNet, a dictionary of synonyms. Presay only suggests
+              common words that score clearly lower. Always check that the meaning still fits your sentence.
+            </li>
+          </ul>
+
+          <h2>Privacy</h2>
+          <p>
+            Your script and your recordings never leave your device. The speech model (OpenAI’s Whisper) runs inside
+            your browser. The first time you practise, your browser downloads the model files from Hugging Face and the
+            speech software from the jsDelivr network, and then keeps them. Your word list and settings are saved in this
+            browser only. Presay has no accounts, no tracking and no cookies.
+          </p>
+
+          <h2>Limits</h2>
+          <ul>
+            <li>
+              A speech model is a stand-in for a human listener, not a perfect one. It sometimes understands a word from
+              context even when it was said unclearly, and sometimes mishears a clear word. Practise a word a few times
+              before trusting the result, and use “Ignore this recording” for bad takes.
+            </li>
+            <li>Pronunciations come from an American English dictionary.</li>
+            <li>
+              Each rule set is a summary of common tendencies. Speakers differ by region, by the other languages they
+              know and by how they learned English, so your own practice results always count for more.
+            </li>
+            <li>
+              The explanations in other languages are new. If something reads wrong in your language, please say so
+              on the project’s GitHub page.
+            </li>
+          </ul>
+
+          <h2>Credits</h2>
+          <ul>
+            <li>Pronunciations: the CMU Pronouncing Dictionary (Carnegie Mellon University).</li>
+            <li>Synonyms: WordNet 3.1 (Princeton University).</li>
+            <li>Word frequency: SCOWL word lists by Kevin Atkinson.</li>
+            <li>Speech recognition: Whisper by OpenAI, run with Transformers.js by Hugging Face.</li>
+            <li>Fonts: Gentium Book Plus (SIL International) and Schibsted Grotesk, both under the SIL Open Font Licence.</li>
+          </ul>
+          <p>Full licence texts: <a href="licenses.txt">licenses.txt</a>.</p>
+          <p class="muted" id="data-meta"></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <span>Runs in your browser. Nothing you type or say is uploaded.</span>
+        <span><a href="#about">About and privacy</a> &nbsp; <a href="https://github.com/bertunalpaydin/presay">Source code</a></span>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <noscript><p style="padding: 1rem">Presay needs JavaScript to run.</p></noscript>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+# Cloudflare Pages reads this file and adds these headers. No paid features.
+#
+# Cross-origin isolation (COOP + COEP) lets the speech model use several CPU
+# threads. "credentialless" still allows the model files from Hugging Face and
+# the speech library and WebAssembly runtime from jsDelivr to load. Browsers without support for it
+# simply run on one thread.
+
+/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: credentialless
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+  Permissions-Policy: microphone=(self), camera=(), geolocation=()
+
+# Data URLs carry a version (js/data-version.js), so a rebuild is picked up at once.
+/data/*
+  Cache-Control: public, max-age=86400
+
+# Fonts never change. The stylesheet and scripts are revalidated on every visit
+# (Cloudflare's default), so an update never mixes new pages with old styles.
+/assets/fonts/*
+  Cache-Control: public, max-age=2592000
+
+/vendor/*
+  Cache-Control: public, max-age=604800
