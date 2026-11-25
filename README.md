@@ -25,7 +25,7 @@ rules for ten first languages, then learns from your own practice.
 
 | Folder | What it is | Built with |
 | --- | --- | --- |
-| [`web/`](web) | Presay, the live website | JavaScript modules, Whisper in the browser via Transformers.js, Cloudflare Pages |
+| [`web/`](web) | Presay, the live website | JavaScript modules, Whisper in the browser via Transformers.js, Cloudflare Workers |
 | [`desktop/`](desktop) | Sayable, the first version | Python, Django, faster-whisper |
 
 Each folder has its own README that explains how it works and how to run it.
