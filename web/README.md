@@ -37,7 +37,7 @@ site/                 the website: deploy this folder as it is
   favicon.svg         the logo; scripts/make-images.mjs draws the other icons from it
   og.png, favicon.ico, apple-touch-icon.png   share preview and icons
   robots.txt, sitemap.xml
-  _headers            security headers for Cloudflare Pages
+  _headers            security headers (Cloudflare reads this file)
   licenses.txt        licences of everything the site serves
 scripts/
   build-data.mjs      rebuilds site/data from the CMU dictionary, WordNet and SCOWL
@@ -47,6 +47,7 @@ scripts/
   serve.mjs           local web server with the same headers as Cloudflare
 tests/                unit tests and browser tests
 docs/ARCHITECTURE.md  how it works and why it is built this way
+wrangler.jsonc        Cloudflare settings: serve site/ and its 404 page
 ```
 
 ## Run it on your computer
@@ -81,34 +82,36 @@ the file).
 GitHub Actions runs `npm test` on every push (`.github/workflows/tests.yml` at
 the top of the repository).
 
-## Put it online for free (Cloudflare Pages)
+## Put it online for free (Cloudflare Workers)
+
+The site runs as a Cloudflare Worker with static assets and no Worker code.
+`wrangler.jsonc` tells Cloudflare to serve the `site` folder and to use
+`site/404.html` for unknown addresses.
 
 1. Create a free Cloudflare account at https://dash.cloudflare.com/sign-up.
-2. Go to **Workers & Pages**, choose **Create**, then the **Pages** tab, then
-   **Connect to Git**, and pick the repository.
-3. Use these build settings:
-   - Framework preset: **None**
-   - Build command: leave it empty
-   - Build output directory: `site`
-   - Root directory (under **Advanced**): `web`
-   - Environment variable: `SKIP_DEPENDENCY_INSTALL` with the value `1`
-4. Save and deploy. The site appears at `https://<project-name>.pages.dev`.
-   Every push to `main` deploys again automatically.
+2. Go to **Compute > Workers & Pages**, choose **Create application**, then
+   **Import a repository**, and pick the repository.
+3. Leave the build command empty and keep the deploy command
+   `npx wrangler deploy`. Under **Advanced settings**, set the root directory to
+   `web`.
+4. Select **Deploy**. The site appears at a `workers.dev` address, and every
+   push to `main` deploys again automatically.
 
 The site has no build step. The root directory keeps Cloudflare away from the
-desktop app's Python files, and the variable stops it installing the packages in
-`package.json`, which only the scripts and tests use.
+desktop app's Python files. Requests for static files are free and unlimited,
+on the free plan too.
 
-Without Git: on the same Pages screen choose **Upload assets** and drag the
-`web/site` folder in.
+Without Git: run `npx wrangler login` and then `npx wrangler deploy` in this
+folder.
 
 ## Add your own domain (the only cost)
 
-1. In the Cloudflare dashboard open **Domain Registration > Register Domains**,
-   search for the name and buy it. Cloudflare sells domains at cost.
-2. Open the Pages project, go to **Custom domains**, choose **Set up a custom
-   domain** and enter the domain. Add it here rather than creating a DNS record
-   by hand: Cloudflare then creates the record and the HTTPS certificate.
+1. In the Cloudflare dashboard open **Domains > Registrations**, choose
+   **Buy domain**, search for the name and buy it. Cloudflare sells domains at
+   cost.
+2. Open the Worker, go to **Domains**, choose **Add domain** and enter the
+   domain. Add it here rather than creating a DNS record by hand: Cloudflare then
+   creates the record and the HTTPS certificate.
 
 A `.app` domain only works over HTTPS, so the address starts working once the
 certificate is ready, which can take a few minutes.
@@ -121,7 +124,7 @@ somewhere else.
 
 | Part | Where it runs | Cost |
 | --- | --- | --- |
-| Website files | Cloudflare Pages, free plan | free |
+| Website files | Cloudflare Workers static assets, free plan | free |
 | Speech recognition | on each visitor's device (Whisper in the browser) | free |
 | Model files | downloaded once per visitor from Hugging Face | free |
 | Speech library and runtime (Transformers.js, WebAssembly) | jsDelivr CDN, with unpkg as a fallback | free |
