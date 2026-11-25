@@ -1,5 +1,8 @@
 # Sayable
 
+The first version of [Presay](../README.md), kept here as it was. The live
+website is in [`../web`](../web).
+
 Sayable helps non-native English speakers get ready for presentations and interviews. It learns which
 sounds speech recognition fails to hear when *you* speak, then checks your script for the words you are
 most likely to be misheard on, and suggests easier words that mean the same thing.
